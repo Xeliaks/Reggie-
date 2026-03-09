@@ -1,0 +1,2 @@
+rootProject.name = 'reggie'
+include 'core-engine', 'desktop-ui'

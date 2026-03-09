@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+java {
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def osName = System.getProperty("os.name").toLowerCase()
+def platform = osName.contains("win") ? "win" : osName.contains("mac") ? "mac" : "linux"
+
+dependencies {
+    implementation project(':core-engine')
+    
+    // Locked entirely to Java 21
+    implementation "org.openjfx:javafx-controls:21.0.10:${platform}"
+    implementation "org.openjfx:javafx-fxml:21.0.10:${platform}"
+    implementation "org.openjfx:javafx-graphics:21.0.10:${platform}"
+    implementation "org.openjfx:javafx-base:21.0.10:${platform}"
+}
+
+application {
+    mainClass = 'reggie.ui.Main' 
+}
