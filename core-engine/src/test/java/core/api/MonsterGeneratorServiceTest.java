@@ -1,7 +1,10 @@
 package core.api; 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import core.data.ArchetypeRepository;
@@ -12,22 +15,34 @@ import core.domain.MonsterFamily;
 
 public class MonsterGeneratorServiceTest {
 
-    @Test
-    public void testGenerateLevel7UndeadBrute() {
-        MonsterFamily undeadFamily = FamilyRepository.loadAllFamilies().stream()
+    private MonsterGeneratorService generator;
+    private MonsterFamily validFamily;
+    private Archetype validArchetype;
+
+    @BeforeEach
+    public void setUp() {
+
+        generator = new MonsterGeneratorService();
+        
+        validFamily = FamilyRepository.loadAllFamilies().stream()
                 .filter(f -> f.familyName().equals("Undead"))
                 .findFirst()
                 .orElseThrow();
                 
-        Archetype bruteArchetype = ArchetypeRepository.loadAllArchetypes().stream()
+        validArchetype = ArchetypeRepository.loadAllArchetypes().stream()
                 .filter(a -> a.roleName().equals("Brute"))
                 .findFirst()
                 .orElseThrow();
+    }
 
-        MonsterGeneratorService generator = new MonsterGeneratorService();
+    @Test
+    public void givenValidInputs_whenGenerateMonster_thenReturnFullyPopulatedMonster() {
 
         int targetLevel = 7;
-        Monster generatedMonster = generator.generateMonster(undeadFamily, bruteArchetype, targetLevel);
+
+
+        Monster generatedMonster = generator.generateMonster(validFamily, validArchetype, targetLevel);
+
 
         System.out.println("=========================================");
         System.out.println("           ENCOUNTER GENERATED           ");
@@ -35,18 +50,62 @@ public class MonsterGeneratorServiceTest {
         System.out.println("Name: " + generatedMonster.name());
         System.out.println("Level: " + generatedMonster.level());
         System.out.println("HP: " + generatedMonster.hitPoints());
-        System.out.println("AC: " + generatedMonster.armorClass());
-        System.out.println("Fortitude: +" + generatedMonster.fortitudeSave());
-        System.out.println("Reflex: +" + generatedMonster.reflexSave());
-        System.out.println("Will: +" + generatedMonster.willSave());
-        System.out.println("Speed: " + generatedMonster.speed() + " ft");
-        System.out.println("Damage: " + generatedMonster.strikeDamage());
-        System.out.println("Abilities: " + generatedMonster.specialAbilities());
-        System.out.println("Immunities: " + generatedMonster.immunities());
         System.out.println("=========================================");
 
         assertNotNull(generatedMonster);
-        assertEquals("Level 7 Undead Brute", generatedMonster.name());
         assertEquals(7, generatedMonster.level());
+        
+        assertNotNull(generatedMonster.name());
+        assertFalse(generatedMonster.name().isBlank());
+    }
+
+    @Test
+    public void givenLevelAbove25_whenGenerateMonster_thenThrowIllegalArgumentException() {
+
+        int invalidLevel = 999; 
+
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            generator.generateMonster(validFamily, validArchetype, invalidLevel);
+        });
+        assertEquals("Security Exception: Level must be strictly between -1 and 25. Received: 999", exception.getMessage());
+    }
+
+    @Test
+    public void givenLevelBelowMinus1_whenGenerateMonster_thenThrowIllegalArgumentException() {
+
+        int invalidLevel = -2; 
+
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            generator.generateMonster(validFamily, validArchetype, invalidLevel);
+        });
+        assertEquals("Security Exception: Level must be strictly between -1 and 25. Received: -2", exception.getMessage());
+    }
+
+    @Test
+    public void givenNullFamily_whenGenerateMonster_thenThrowIllegalArgumentException() {
+
+        MonsterFamily nullFamily = null;
+        int targetLevel = 7;
+
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            generator.generateMonster(nullFamily, validArchetype, targetLevel);
+        });
+        assertEquals("Security Exception: MonsterFamily cannot be null.", exception.getMessage());
+    }
+
+    @Test
+    public void givenNullArchetype_whenGenerateMonster_thenThrowIllegalArgumentException() {
+
+        Archetype nullArchetype = null;
+        int targetLevel = 7;
+
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            generator.generateMonster(validFamily, nullArchetype, targetLevel);
+        });
+        assertEquals("Security Exception: Archetype cannot be null.", exception.getMessage());
     }
 }

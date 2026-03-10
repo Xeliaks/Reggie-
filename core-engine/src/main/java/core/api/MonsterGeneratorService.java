@@ -15,6 +15,7 @@ import core.generation.AbilitySelector;
 import core.generation.ArchetypeApplier;
 import core.generation.AttributeAssigner;
 import core.generation.BaseStatCalculator;
+import core.generation.NameGenerator;
 import core.generation.StatRandomizer;
 
 public class MonsterGeneratorService {
@@ -22,8 +23,16 @@ public class MonsterGeneratorService {
 
     public Monster generateMonster(MonsterFamily family, Archetype archetype, int level) {
         
-        
-        // Base Statistics 
+        if (family == null) {
+            throw new IllegalArgumentException("Security Exception: MonsterFamily cannot be null.");
+        }
+        if (archetype == null) {
+            throw new IllegalArgumentException("Security Exception: Archetype cannot be null.");
+        }
+        if (level < -1 || level > 25) {
+            throw new IllegalArgumentException("Security Exception: Level must be strictly between -1 and 25. Received: " + level);
+        }
+       
         int baseAc = BaseStatCalculator.calculateAC(level, family.acScale());
         int baseFort = BaseStatCalculator.calculateSave(level, family.fortitudeScale());
         int baseReflex = BaseStatCalculator.calculateSave(level, family.reflexScale());
@@ -33,7 +42,6 @@ public class MonsterGeneratorService {
         int baseStrike = BaseStatCalculator.calculateStrikeBonus(level, StatScale.MODERATE);
 
      
-        // Archetype Transformation 
         int archAc = ArchetypeApplier.applyAC(baseAc, archetype);
         int archFort = ArchetypeApplier.applyFortitude(baseFort, archetype);
         int archReflex = ArchetypeApplier.applyReflex(baseReflex, archetype);
@@ -42,32 +50,31 @@ public class MonsterGeneratorService {
         int finalStrike = ArchetypeApplier.applyStrikeBonus(baseStrike, archetype);
 
         
-        // Controlled Randomization & Ability Selection
+    
        
         int finalHp = StatRandomizer.randomizeHP(archHp);
         List<String> selectedAbilities = AbilitySelector.selectAbilities(family, level);
         
-        // Add any archetype-specific granted abilities 
+      
         List<String> finalAbilities = new ArrayList<>(selectedAbilities);
         finalAbilities.addAll(archetype.grantedAbilities());
 
-       
-        // Attribute Assignment
+     
         Map<AbilityScore, Integer> attributes = AttributeAssigner.assignAttributes(family, level);
 
       
-        //Constructing the Output Container
-        String generatedName = "Level " + level + " " + family.familyName() + " " + archetype.roleName();
+      
+        String generatedName = NameGenerator.generateRandomName();
         
-        // Calculate dynamic baseline perception and speed
+      
         int finalPerception = (5 + level) + attributes.get(AbilityScore.WISDOM) + archetype.perceptionModifier();
         int finalSpeed = 25 + archetype.speedModifier();
         
-        // Construct basic scaling damage string to accommodate PF2e formatting conventions
+    
         int damageDice = Math.max(1, (level / 4) + 1);
         String finalDamage = damageDice + "d8 + " + attributes.get(AbilityScore.STRENGTH) + " physical";
 
-        // Convert enums to strings for conversion
+       
         Set<String> movementStrings = family.commonMovementTypes().stream()
                 .map(Enum::name)
                 .collect(Collectors.toSet());

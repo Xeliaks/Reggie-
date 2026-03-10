@@ -17,14 +17,17 @@ def platform = osName.contains("win") ? "win" : osName.contains("mac") ? "mac" :
 
 dependencies {
     implementation project(':core-engine')
-    
-    // Locked entirely to Java 21
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.30'
+
     implementation "org.openjfx:javafx-controls:21.0.10:${platform}"
     implementation "org.openjfx:javafx-fxml:21.0.10:${platform}"
     implementation "org.openjfx:javafx-graphics:21.0.10:${platform}"
     implementation "org.openjfx:javafx-base:21.0.10:${platform}"
+    implementation "org.openjfx:javafx-web:21.0.10:${platform}"
+    implementation "org.openjfx:javafx-media:21.0.10:${platform}"
 }
 
 application {
-    mainClass = 'reggie.ui.Main' 
+    mainClass = 'ui.AppLauncher' 
 }

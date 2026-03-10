@@ -4,10 +4,7 @@ import core.domain.MonsterFamily.StatScale;
 
 public class BaseStatCalculator {
 
-    /**
-     * Calculates baseline Armor Class.
-     * Standard AC in PF2e scales at roughly 15 + Level.
-     */
+ 
     public static int calculateAC(int level, StatScale scale) {
         int baseAc = 15 + level;
         return switch (scale) {
@@ -19,10 +16,7 @@ public class BaseStatCalculator {
         };
     }
 
-    /**
-     * Calculates baseline Saving Throws (Fortitude, Reflex, Will).
-     * Standard saves scale at roughly 5 + Level.
-     */
+ 
     public static int calculateSave(int level, StatScale scale) {
         int baseSave = 5 + level;
         return switch (scale) {
@@ -34,10 +28,7 @@ public class BaseStatCalculator {
         };
     }
 
-    /**
-     * Calculates baseline Hit Points.
-     * HP scales dramatically per level based on creature role.
-     */
+   
     public static int calculateHP(int level, StatScale scale) {
         int effectiveLevel = Math.max(1, level); 
         int baseHp = effectiveLevel * 15;
@@ -51,9 +42,7 @@ public class BaseStatCalculator {
         };
     }
 
-    /**
-     * Calculates baseline Strike Bonus (Attack Roll).
-     */
+   
     public static int calculateStrikeBonus(int level, StatScale scale) {
         int baseStrike = 7 + level;
         return switch (scale) {

@@ -32,7 +32,7 @@ public class FamilyRepository {
             Set.of(MonsterFamily.MovementType.TERRESTRIAL),
             Set.of(MonsterFamily.Sense.DARKVISION),
             new MonsterFamily.DefensiveTraits(
-                Set.of("death effects", "disease", "paralyzed", "poison", "unconscious"), 
+                Set.of("death effects", "disease", "paralyzed", "poison", "mindless"), 
                 Collections.emptySet(), 
                 Set.of("vitality") 
             ),
