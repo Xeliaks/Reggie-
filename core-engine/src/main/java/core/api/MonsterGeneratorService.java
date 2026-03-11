@@ -60,7 +60,7 @@ public class MonsterGeneratorService {
         finalAbilities.addAll(archetype.grantedAbilities());
 
      
-        Map<AbilityScore, Integer> attributes = AttributeAssigner.assignAttributes(family, level);
+        Map<AbilityScore, Integer> attributes = AttributeAssigner.assignAttributes(family, archetype, level);
 
       
       
